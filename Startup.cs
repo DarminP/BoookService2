@@ -29,6 +29,12 @@ namespace BoookService2
         {
             var connection = Configuration.GetConnectionString("BookDbDatabase");
             services.AddDbContextPool<BookContext>(options => options.UseSqlServer(connection));
+            services.AddCors(options => options.AddPolicy("ThebookPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -50,10 +56,11 @@ namespace BoookService2
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors("MyPolicy");
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors("ThebookPolicy");
             });
         }
     }
